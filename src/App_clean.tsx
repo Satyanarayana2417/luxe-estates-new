@@ -44,7 +44,7 @@ const App = () => {
     // Remove the shine overlay after animation completes
     setTimeout(() => {
       setShowPageShine(false);
-    }, 1100); // Slightly longer than 1 second animation duration
+    }, 2100); // Slightly longer than animation duration
   };
 
   useEffect(() => {

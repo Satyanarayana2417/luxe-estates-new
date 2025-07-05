@@ -1,11 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface LoadingScreenProps {
   isVisible: boolean;
+  onLoadingComplete?: () => void;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ isVisible }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ isVisible, onLoadingComplete }) => {
+  useEffect(() => {
+    if (!isVisible && onLoadingComplete) {
+      // Trigger page shine sweep after loading screen disappears
+      const timer = setTimeout(() => {
+        onLoadingComplete();
+      }, 100); // Small delay to ensure loading screen is fully hidden
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onLoadingComplete]);
   return (
     <div 
       className={`fixed inset-0 z-[9999] bg-white flex items-center justify-center transition-all duration-700 ease-out ${
@@ -15,21 +26,25 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isVisible }) => {
       }`}
     >
       <div className="flex flex-col items-center justify-center px-6 py-8">
-        {/* Logo Container - Increased Size */}
-        <div className={`relative mb-8 transition-all duration-1000 ease-out ${
+        {/* Logo Container - With Shine Sweep Animation */}
+        <div className={`relative mb-8 mt-8 transition-all duration-1000 ease-out ${
           isVisible 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-90 translate-y-8'
         }`}>
           {/* Subtle background pulse */}
-          <div className="absolute inset-0 -m-12 bg-gradient-to-r from-purple-100/30 to-blue-100/30 rounded-full animate-pulse opacity-60"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-100/30 to-blue-100/30 rounded-full animate-pulse opacity-60 flex items-center justify-center w-[320px] h-[320px] sm:w-[360px] sm:h-[360px] lg:w-[400px] lg:h-[400px] -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"></div>
           
-          {/* Logo - Significantly Larger */}
-          <img 
-            src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iMjAiIGZpbGw9InVybCgjZ3JhZGllbnQwXzEpIi8+CjxwYXRoIGQ9Ik01MCA1MEgxNTBWMTUwSDUwVjUwWiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik03MCA3MEgxMzBWMTMwSDcwVjcwWiIgZmlsbD0id2hpdGUiLz4KPHRleHQgeD0iMTAwIiB5PSIxNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkx1eGU8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MF8xIiB4MT0iMCIgeTE9IjAiIHgyPSIyMDAiIHkyPSIyMDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzgzNTVGRiIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0RjQ2RTUiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K"
-            alt="Luxe Real Estates Logo"
-            className="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] lg:w-[280px] lg:h-[280px] object-contain relative z-10 animate-gentle-float"
-          />
+          {/* Logo with Shine Sweep Effect */}
+          <div className="flex items-center justify-center ml-4 relative overflow-hidden">
+            <img 
+              src="https://i.ibb.co/qMWvqVpB/1000130460-removebg-preview.webp"
+              alt="Luxe Real Estates Logo"
+              className="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] lg:w-[280px] lg:h-[280px] object-contain relative z-10 animate-gentle-float logo-shine"
+            />
+            {/* Shine Sweep Overlay */}
+            <div className="absolute inset-0 z-20 shine-sweep"></div>
+          </div>
         </div>
 
         {/* Brand Name - Increased Spacing */}
@@ -39,20 +54,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isVisible }) => {
             : 'opacity-0 scale-95 translate-y-4'
         }`}>
           <h1 className="text-xl sm:text-3xl lg:text-4xl font-semibold text-gray-800 tracking-wide font-inter mb-3">
-            Luxe Real Estates
+            
           </h1>
-          <div className="w-20 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto animate-gentle-pulse"></div>
-        </div>
-
-        {/* Loading indicator dots - Increased Spacing */}
-        <div className={`flex items-center justify-center mt-10 space-x-2 transition-all duration-1000 delay-500 ${
-          isVisible 
-            ? 'opacity-100 translate-y-0' 
-            : 'opacity-0 translate-y-4'
-        }`}>
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1.4s' }}></div>
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '200ms', animationDuration: '1.4s' }}></div>
-          <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '400ms', animationDuration: '1.4s' }}></div>
         </div>
       </div>
     </div>

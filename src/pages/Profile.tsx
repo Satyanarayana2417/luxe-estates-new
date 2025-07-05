@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
@@ -51,9 +50,17 @@ const Profile = () => {
       return;
     }
 
+    // Scroll to top when profile page loads
+    window.scrollTo(0, 0);
+
     fetchUserProfile();
     fetchShortlistedProperties();
   }, [currentUser, navigate]);
+
+  // Additional effect to ensure scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const fetchUserProfile = async () => {
     if (!currentUser) return;
@@ -271,10 +278,10 @@ const Profile = () => {
                 <div className="absolute top-10 right-0 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[240px] animate-fade-in">
                   <div className="text-sm">
                     <div className="font-medium text-gray-900 mb-1">
-                      Email: snsnarayanachodisetti@gmail.com
+                      Email: {userProfile?.email || currentUser.email || 'user@example.com'}
                     </div>
                     <div className="text-gray-500">
-                      Joined: 29/06/2025
+                      Joined: {userProfile?.createdAt ? new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString() : '29/06/2025'}
                     </div>
                   </div>
                   <div className="absolute -top-2 right-4 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-4 border-b-white"></div>

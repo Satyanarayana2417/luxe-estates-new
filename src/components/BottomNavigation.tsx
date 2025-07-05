@@ -22,6 +22,10 @@ const BottomNavigation = () => {
       }
     } else {
       navigate('/');
+      // Ensure page scrolls to top when navigating to home
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     }
   };
 
@@ -129,6 +133,10 @@ const BottomNavigation = () => {
   const handleProfileClick = () => {
     if (currentUser) {
       navigate('/profile');
+      // Ensure page scrolls to top when navigating to profile
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     } else {
       navigate('/login');
     }

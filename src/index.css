@@ -459,4 +459,153 @@
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
+/* Basic fade-in animation for profile popup */
+.animate-fade-in {
+  opacity: 0;
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Professional Shine Sweep Animation for Logo */
+.logo-shine {
+  position: relative;
+}
+
+.shine-sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine-sweep 0.8s ease-in-out infinite;
+  animation-delay: 0.2s;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  filter: blur(0.5px);
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .shine-sweep {
+    animation: none;
+  }
+}
+
+/* Responsive optimization for different screen sizes */
+@media (max-width: 640px) {
+  .shine-sweep {
+    filter: blur(0.3px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .shine-sweep {
+    filter: blur(0.7px);
+  }
+}
+
+/* Page-wide Shine Sweep Animation */
+.page-shine-overlay {
+  position: fixed;
+  top: 0;
+  left: -100vw;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.3) 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.3) 60%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: overlay;
+  filter: blur(1px);
+  opacity: 0;
+}
+
+.page-shine-overlay.active {
+  animation: page-shine-sweep 1s ease-out forwards;
+}
+
+@keyframes page-shine-sweep {
+  0% {
+    left: -100vw;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100vw;
+    opacity: 0;
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .page-shine-overlay {
+    display: none !important;
+  }
+  
+  .page-shine-overlay.active {
+    animation: none !important;
+  }
+}
+
+/* Responsive optimizations */
+@media (max-width: 768px) {
+  .page-shine-overlay {
+    filter: blur(0.8px);
+  }
+}
+
+@media (min-width: 1920px) {
+  .page-shine-overlay {
+    filter: blur(1.2px);
+  }
+}
 }
