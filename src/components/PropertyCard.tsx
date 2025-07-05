@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Heart, MapPin, Bed, Bath, Square, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, MapPin, Bed, Bath, Square, Phone, ChevronLeft, ChevronRight, Share, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useShortlist } from '@/hooks/useShortlist';
 import EnhancedShareMenu from '@/components/EnhancedShareMenu';
+import { combineMediaItems, MediaItem, isVideoUrl, getVideoThumbnail } from '@/lib/mediaUtils';
 
 interface PropertyCardProps {
   property: {
@@ -14,6 +15,7 @@ interface PropertyCardProps {
     location: string;
     type: string;
     images: string[];
+    videos?: string[];
     bedrooms?: number;
     bathrooms?: number;
     area: string;
@@ -27,45 +29,31 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { isShortlisted, toggleShortlist, isLoading: shortlistLoading } = useShortlist();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
 
-  const getValidImages = () => {
-    const defaultImage = 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?q=80&w=500';
+  const getMediaItems = (): MediaItem[] => {
+    const images = property.images || [];
+    const videos = property.videos || [];
+    const mediaItems = combineMediaItems(images, videos);
     
-    if (!property.images || !Array.isArray(property.images) || property.images.length === 0) {
-      console.log('No images found for property:', property.title);
-      return [defaultImage];
+    if (mediaItems.length === 0) {
+      const defaultImage = 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?q=80&w=500';
+      return [{ url: defaultImage, type: 'image' }];
     }
     
-    const validImages = property.images.filter(img => {
-      if (!img || typeof img !== 'string' || img.trim() === '') return false;
-      
-      if (img.startsWith('blob:')) {
-        console.log('Filtering out blob URL:', img.substring(0, 50) + '...');
-        return false;
-      }
-      
-      if (img.startsWith('data:image/') || img.startsWith('https://')) {
-        console.log('Valid image found:', img.substring(0, 50) + '...');
-        return true;
-      }
-      
-      return false;
-    });
-    
-    console.log('Valid images for property', property.title, ':', validImages.length, 'images');
-    return validImages.length > 0 ? validImages : [defaultImage];
+    return mediaItems;
   };
 
-  const validImages = getValidImages();
+  const mediaItems = getMediaItems();
+  const currentMedia = mediaItems[currentMediaIndex];
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => 
-      prev === validImages.length - 1 ? 0 : prev + 1
+    setCurrentMediaIndex((prev) => 
+      prev === mediaItems.length - 1 ? 0 : prev + 1
     );
     setImageLoading(true);
     setImageError(false);
@@ -73,8 +61,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? validImages.length - 1 : prev - 1
+    setCurrentMediaIndex((prev) => 
+      prev === 0 ? mediaItems.length - 1 : prev - 1
     );
     setImageLoading(true);
     setImageError(false);
@@ -82,7 +70,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   const goToImage = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex(index);
+    setCurrentMediaIndex(index);
     setImageLoading(true);
     setImageError(false);
   };
@@ -93,7 +81,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   const handleImageError = () => {
-    console.error('Image failed to load:', validImages[currentImageIndex]?.substring(0, 50) + '...');
+    console.error('Media failed to load:', currentMedia?.url?.substring(0, 50) + '...');
     setImageLoading(false);
     setImageError(true);
   };
@@ -114,17 +102,25 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   const handleShortlistClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Add heart bounce animation
+    const heartIcon = e.currentTarget.querySelector('.heart-icon');
+    if (heartIcon) {
+      heartIcon.classList.add('heart-bounce');
+      setTimeout(() => heartIcon.classList.remove('heart-bounce'), 600);
+    }
+    
     await toggleShortlist(property.id);
   };
 
-  const currentImageUrl = validImages[currentImageIndex];
+  const currentImageUrl = currentMedia?.type === 'image' ? currentMedia.url : currentMedia?.thumbnail || '';
   const isLandProperty = property.category === 'Land' || property.type === 'Land' || property.type === 'Agricultural' || property.type === 'Residential Plot';
   const isPropertyShortlisted = isShortlisted(property.id);
 
   return (
     <>
       <div 
-        className="property-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] transform cursor-pointer"
+        className="property-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-purple-200 active:scale-100 active:shadow-xl"
         onClick={handleCardClick}
       >
         {/* Image Carousel - Reduced height for mobile */}
@@ -132,16 +128,46 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           
           
           <div className="relative w-full h-full">
-            <img 
-              src={currentImageUrl}
-              alt={`${property.title} - Image ${currentImageIndex + 1}`}
-              className={`w-full h-full object-cover transition-all duration-700 transform ${
-                imageLoading ? 'opacity-0' : 'opacity-100'
-              } group-hover:scale-110`}
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              loading="lazy"
-            />
+            {currentMedia?.type === 'video' ? (
+              // Video Display
+              <div className="relative w-full h-full">
+                <img 
+                  src={currentMedia.thumbnail || getVideoThumbnail(currentMedia.url)}
+                  alt={`${property.title} - Video ${currentMediaIndex + 1}`}
+                  className={`w-full h-full object-cover transition-all duration-700 transform ${
+                    imageLoading ? 'opacity-0' : 'opacity-100'
+                  } group-hover:scale-110`}
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  loading="lazy"
+                />
+                
+                {/* Video Play Button Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-opacity-100 hover:scale-110">
+                    <Play className="w-8 h-8 text-gray-800 ml-1" />
+                  </div>
+                </div>
+                
+                {/* Video Type Indicator */}
+                <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                  <Play className="w-3 h-3" />
+                  Video
+                </div>
+              </div>
+            ) : (
+              // Image Display
+              <img 
+                src={currentImageUrl}
+                alt={`${property.title} - Image ${currentMediaIndex + 1}`}
+                className={`w-full h-full object-cover transition-all duration-700 transform ${
+                  imageLoading ? 'opacity-0' : 'opacity-100'
+                } group-hover:scale-110`}
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                loading="lazy"
+              />
+            )}
             
             {imageLoading && (
               <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
@@ -153,7 +179,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
                 <div className="text-gray-500 text-sm text-center">
                   <div className="text-2xl mb-2">🏠</div>
-                  <div>Image unavailable</div>
+                  <div>Media unavailable</div>
                 </div>
               </div>
             )}
@@ -168,74 +194,72 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           )}
 
           {/* Top right icons - Heart and Share */}
-          <div className="absolute top-4 right-4 flex gap-2">
+          <div className="absolute top-2 right-2 flex gap-1">
             <button 
               onClick={handleShortlistClick}
               disabled={shortlistLoading}
-              className={`w-10 h-10 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-lg ${
-                isPropertyShortlisted 
-                  ? 'bg-red-500/90 hover:bg-red-600/90' 
-                  : 'bg-white/20 hover:bg-white/40'
-              }`}
+              className="w-8 h-8 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white/40 hover:scale-110 active:scale-95 active:bg-white/60 transform touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
               <Heart 
-                className={`w-5 h-5 transition-all duration-300 transform ${
+                className={`heart-icon w-4 h-4 transition-all duration-300 ${
                   isPropertyShortlisted 
-                    ? 'text-white fill-white scale-110' 
-                    : 'text-white hover:text-red-400'
+                    ? 'text-red-500 fill-red-500 animate-pulse' 
+                    : 'text-white hover:text-red-400 active:text-red-500'
                 }`} 
               />
             </button>
             
-            {/* Share button with flipped icon */}
             <button 
               onClick={handleShareClick}
-              className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 ease-in-out transform hover:bg-white/40 hover:scale-110 hover:shadow-lg"
+              className="w-8 h-8 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white/40 hover:scale-110 active:scale-95 active:bg-white/60 transform touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
-              <img 
-                src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                alt="Share" 
-                className="w-5 h-5 transform scale-x-[-1] filter brightness-0 invert"
+              <Share 
+                className="w-4 h-4 text-white hover:text-blue-400 active:text-blue-500 transition-colors duration-300"
               />
             </button>
           </div>
 
-          {validImages.length > 1 && (
+          {mediaItems.length > 1 && (
             <>
               <button 
                 onClick={prevImage}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:-translate-x-1"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:-translate-x-1 active:scale-110 active:bg-white/80 touch-manipulation"
+                style={{ touchAction: 'manipulation' }}
               >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
               <button 
                 onClick={nextImage}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:translate-x-1"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:translate-x-1 active:scale-110 active:bg-white/80 touch-manipulation"
+                style={{ touchAction: 'manipulation' }}
               >
                 <ChevronRight className="w-5 h-5 text-white" />
               </button>
             </>
           )}
 
-          {validImages.length > 1 && (
+          {mediaItems.length > 1 && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-              {validImages.map((_, index) => (
+              {mediaItems.map((media, index) => (
                 <button
                   key={index}
                   onClick={(e) => goToImage(index, e)}
-                  className={`transition-all duration-300 ease-in-out rounded-full hover:scale-125 transform ${
-                    index === currentImageIndex 
+                  className={`transition-all duration-300 ease-in-out rounded-full hover:scale-125 active:scale-110 transform touch-manipulation ${
+                    index === currentMediaIndex 
                       ? 'bg-white w-6 h-2' 
                       : 'bg-white/50 hover:bg-white/90 w-2 h-2'
-                  }`}
+                  } ${media.type === 'video' ? 'ring-2 ring-blue-400' : ''}`}
+                  style={{ touchAction: 'manipulation' }}
                 />
               ))}
             </div>
           )}
 
-          {validImages.length > 1 && (
+          {mediaItems.length > 1 && (
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {currentImageIndex + 1} / {validImages.length}
+              {currentMediaIndex + 1} / {mediaItems.length}
             </div>
           )}
 
@@ -252,9 +276,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent transition-all duration-300 hover:from-purple-700 hover:to-blue-700">
               {property.price}
             </div>
-            {validImages.length > 1 && (
+            {mediaItems.length > 1 && (
               <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full transition-all duration-300 ease-in-out hover:bg-gray-200 hover:scale-105 transform">
-                {validImages.length} photos
+                {mediaItems.filter(m => m.type === 'image').length} photos
+                {mediaItems.filter(m => m.type === 'video').length > 0 && (
+                  <span className="text-blue-600 ml-1">
+                    + {mediaItems.filter(m => m.type === 'video').length} video{mediaItems.filter(m => m.type === 'video').length > 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -300,13 +329,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <div className="flex space-x-3">
             <Button 
               onClick={handleViewDetails}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+              className="flex-1 btn-interactive bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg active:scale-95"
             >
               View Details
             </Button>
             <Button 
               variant="outline" 
-              className="p-3 border-gray-300 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md"
+              className="p-3 border-gray-300 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 btn-interactive transition-all duration-300 hover:shadow-md active:scale-95"
               onClick={(e) => e.stopPropagation()}
             >
               <Phone className="w-4 h-4" />
@@ -323,7 +352,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         propertyPrice={property.price}
         propertyLocation={property.location}
         propertyId={property.id}
-        propertyImage={validImages[0]}
+        propertyImage={mediaItems.find(m => m.type === 'image')?.url || currentMedia?.url}
       />
     </>
   );

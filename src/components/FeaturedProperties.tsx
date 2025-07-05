@@ -4,6 +4,10 @@ import { collection, getDocs, query, where, orderBy, limit, onSnapshot } from 'f
 import { db } from '@/lib/firebase';
 import PropertyCard from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
+import { Heart, Share } from 'lucide-react';
+import { useShortlist } from '@/hooks/useShortlist';
+import { useNavigate } from 'react-router-dom';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface Property {
   id: string;
@@ -25,6 +29,15 @@ const FeaturedProperties = () => {
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
+  
+  // Add shortlist functionality
+  const { isShortlisted, toggleShortlist, isLoading: shortlistLoading } = useShortlist();
+  const navigate = useNavigate();
+
+  // Scroll animations
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation({ threshold: 0.2 });
+  const { ref: filtersRef, isVisible: filtersVisible } = useScrollAnimation({ threshold: 0.2, delay: 200 });
+  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation({ threshold: 0.1, delay: 300 });
 
   const categories = ['All', 'For Sale', 'For Rent', 'Commercial', 'PG/Hostels', 'Land'];
 
@@ -191,11 +204,26 @@ const FeaturedProperties = () => {
     setFilteredProperties(filtered);
   };
 
+  // Add shortlist handler
+  const handleShortlistClick = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    await toggleShortlist(propertyId);
+  };
+
+  // Add view details handler
+  const handleViewDetails = (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    navigate(`/property/${propertyId}`);
+  };
+
   return (
     <section className="py-8 sm:py-12 lg:py-16 xl:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+        <div 
+          ref={titleRef}
+          className={`text-center mb-6 sm:mb-8 lg:mb-12 scroll-fade-in ${titleVisible ? 'animate' : ''}`}
+        >
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6">
             Featured Properties
           </h2>
@@ -204,7 +232,10 @@ const FeaturedProperties = () => {
           </p>
           
           {/* Category Filter Buttons - Mobile Responsive */}
-          <div className="mb-6 sm:mb-8">
+          <div 
+            ref={filtersRef}
+            className={`mb-6 sm:mb-8 scroll-fade-in-right ${filtersVisible ? 'animate' : ''}`}
+          >
             {/* Mobile: Horizontal Scroll */}
             <div className="flex sm:hidden overflow-x-auto pb-2 px-2 -mx-2 space-x-2 snap-x snap-mandatory">
               {categories.map((category) => (
@@ -270,16 +301,21 @@ const FeaturedProperties = () => {
             </div>
           </div>
         ) : filteredProperties.length > 0 ? (
-          <div>
+          <div 
+            ref={gridRef}
+            className={`scroll-fade-in ${gridVisible ? 'animate' : ''}`}
+          >
             {/* Mobile: 2-Column Grid */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
               {filteredProperties.map((property, index) => (
                 <div 
                   key={property.id} 
-                  className="fade-in-up" 
-                  style={{animationDelay: `${index * 0.1}s`}}
+                  className={`property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${Math.min(index + 1, 6)}`}
                 >
-                  <div className="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 transform hover:scale-105">
+                  <div 
+                    className="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    onClick={(e) => handleViewDetails(e, property.id)}
+                  >
                     {/* Mobile Property Card Content */}
                     <div className="relative h-32 overflow-hidden group">
                       <img 
@@ -297,6 +333,21 @@ const FeaturedProperties = () => {
                           Featured
                         </div>
                       )}
+
+                      {/* Heart Icon - Top Right */}
+                      <button 
+                        onClick={(e) => handleShortlistClick(e, property.id)}
+                        disabled={shortlistLoading}
+                        className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                      >
+                        <Heart 
+                          className={`w-4 h-4 transition-all duration-200 ${
+                            isShortlisted(property.id) 
+                              ? 'text-red-500 fill-red-500' 
+                              : 'text-white hover:text-red-400 drop-shadow-md'
+                          }`} 
+                        />
+                      </button>
 
                       {/* Property Type Tag */}
                       <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-full text-xs">
@@ -325,7 +376,10 @@ const FeaturedProperties = () => {
                       </div>
 
                       {/* Action Button */}
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 text-xs py-2 transform hover:scale-105 hover:shadow-md">
+                      <Button 
+                        onClick={(e) => handleViewDetails(e, property.id)}
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 text-xs py-2 transform hover:scale-105 hover:shadow-md"
+                      >
                         View Details
                       </Button>
                     </div>
@@ -339,8 +393,7 @@ const FeaturedProperties = () => {
               {filteredProperties.map((property, index) => (
                 <div 
                   key={property.id} 
-                  className="fade-in-up" 
-                  style={{animationDelay: `${index * 0.1}s`}}
+                  className={`property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${Math.min(index + 1, 6)}`}
                 >
                   <PropertyCard property={property} />
                 </div>

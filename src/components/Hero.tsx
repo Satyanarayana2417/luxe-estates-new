@@ -46,12 +46,12 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16 animate-fade-in-up">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight mb-6 font-display">
-            <span className="block mb-2 drop-shadow-lg">Find Your Perfect</span>
-            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent drop-shadow-lg">
+            <span className="block mb-2 drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300">Find Your Perfect</span>
+            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent drop-shadow-lg gradient-text-animate">
               Property
             </span>
           </h1>
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed font-medium drop-shadow-md">
+          <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed font-medium drop-shadow-md hover:text-gray-50 transition-colors duration-300">
             Discover premium real estate opportunities with our comprehensive platform
           </p>
         </div>
@@ -66,33 +66,33 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
           {/* Mobile: Stacked in 2 rows with white text */}
           <div className="flex sm:hidden flex-col items-center gap-3">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20">
-                <div className="w-2 h-2 bg-green-400 rounded-full shadow-lg"></div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div className="w-2 h-2 bg-green-400 rounded-full shadow-lg animate-pulse"></div>
                 <span className="font-medium text-sm text-white">Verified Properties</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20">
-                <div className="w-2 h-2 bg-blue-400 rounded-full shadow-lg"></div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+                <div className="w-2 h-2 bg-blue-400 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                 <span className="font-medium text-sm text-white">Trusted Listings</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20">
-              <div className="w-2 h-2 bg-purple-400 rounded-full shadow-lg"></div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 bg-purple-400 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.4s' }}></div>
               <span className="font-medium text-sm text-white">Expert Support</span>
             </div>
           </div>
           
           {/* Desktop: Single row */}
           <div className="hidden sm:flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm text-gray-200">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-              <div className="w-2 h-2 bg-green-400 rounded-full shadow-lg"></div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 bg-green-400 rounded-full shadow-lg animate-pulse"></div>
               <span className="font-medium">Verified Properties</span>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-              <div className="w-2 h-2 bg-blue-400 rounded-full shadow-lg"></div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 bg-blue-400 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
               <span className="font-medium">Trusted Listings</span>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-              <div className="w-2 h-2 bg-purple-400 rounded-full shadow-lg"></div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 bg-purple-400 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.4s' }}></div>
               <span className="font-medium">Expert Support</span>
             </div>
           </div>

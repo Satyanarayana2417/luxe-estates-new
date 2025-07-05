@@ -23,6 +23,7 @@ interface Property {
   type: string;
   category: string;
   images: string[];
+  videos?: string[];
   bedrooms?: number;
   bathrooms?: number;
   area: string;
@@ -147,7 +148,11 @@ const PropertyDetails = () => {
             {/* 1. Image Gallery - First on Mobile */}
             <Card className="overflow-hidden shadow-soft-lg rounded-2xl">
               <CardContent className="p-1 sm:p-6">
-                <PropertyImageGallery images={property.images} title={property.title} />
+                <PropertyImageGallery 
+                  images={property.images} 
+                  videos={property.videos} 
+                  title={property.title} 
+                />
               </CardContent>
             </Card>
 

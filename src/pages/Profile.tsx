@@ -136,13 +136,30 @@ const Profile = () => {
       if (heroSection) {
         heroSection.scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => {
-          const searchInput = document.querySelector('input[placeholder*="location"]') as HTMLInputElement;
+          // Target the mobile search input first (since this is mobile navigation)
+          const mobileSearchInput = document.getElementById('search-anything-input-mobile') as HTMLInputElement;
+          const desktopSearchInput = document.getElementById('search-anything-input') as HTMLInputElement;
+          
+          // Use mobile input if available, otherwise fallback to desktop
+          const searchInput = mobileSearchInput || desktopSearchInput;
+          
           if (searchInput) {
             searchInput.focus();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Trigger a click event to ensure any click handlers are fired
+            searchInput.click();
+          } else {
+            // Fallback using placeholder text
+            const fallbackInput = document.querySelector('input[placeholder*="Enter anything related to properties"]') as HTMLInputElement;
+            if (fallbackInput) {
+              fallbackInput.focus();
+              fallbackInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              fallbackInput.click();
+            }
           }
-        }, 300);
+        }, 800);
       }
-    }, 100);
+    }, 300);
   };
 
   const handleExploreProperties = () => {

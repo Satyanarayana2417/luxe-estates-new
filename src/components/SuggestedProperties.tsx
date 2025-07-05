@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import PropertyCard from './PropertyCard';
-import { Heart, ChevronRight, MapPin, Square, Phone } from 'lucide-react';
+import { Heart, ChevronRight, MapPin, Square, Phone, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useShortlist } from '@/hooks/useShortlist';
 import EnhancedShareMenu from '@/components/EnhancedShareMenu';
 
 interface Property {
@@ -36,6 +37,7 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
   const [showAllOnMobile, setShowAllOnMobile] = useState(false);
   const [shareMenuProperty, setShareMenuProperty] = useState<Property | null>(null);
   const navigate = useNavigate();
+  const { isShortlisted, toggleShortlist } = useShortlist();
 
   useEffect(() => {
     fetchSuggestedProperties();
@@ -119,6 +121,11 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
     setShareMenuProperty(property);
   };
 
+  const handleShortlistClick = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    await toggleShortlist(propertyId);
+  };
+
   const handleCloseShareMenu = () => {
     setShareMenuProperty(null);
   };
@@ -163,7 +170,7 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                   >
                     <div className="bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-44">
                       {/* Equal Height Image */}
-                      <div className="h-20 overflow-hidden">
+                      <div className="relative h-20 overflow-hidden">
                         <img 
                           src={property.images[0]}
                           alt={property.title}
@@ -172,6 +179,31 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                             e.currentTarget.src = 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?q=80&w=500';
                           }}
                         />
+                        
+                        {/* Top right icons - Heart and Share */}
+                        <div className="absolute top-1 right-1 flex gap-1">
+                          <button 
+                            onClick={(e) => handleShortlistClick(e, property.id)}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Heart 
+                              className={`w-4 h-4 transition-all duration-200 ${
+                                isShortlisted(property.id) 
+                                  ? 'text-red-500 fill-red-500' 
+                                  : 'text-white hover:text-red-400 drop-shadow-md'
+                              }`} 
+                            />
+                          </button>
+                          
+                          <button 
+                            onClick={(e) => handleShareClick(e, property)}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Share 
+                              className="w-4 h-4 text-white hover:text-blue-400 drop-shadow-md"
+                            />
+                          </button>
+                        </div>
                       </div>
                       
                       {/* Equal Height Content */}
@@ -224,17 +256,30 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                       style={{animationDelay: `${index * 0.05}s`}}
                     >
                       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200 relative">
-                        {/* Share Button */}
-                        <button 
-                          onClick={(e) => handleShareClick(e, property)}
-                          className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-white hover:scale-110 hover:shadow-lg z-10"
-                        >
-                          <img 
-                            src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                            alt="Share" 
-                            className="w-4 h-4 transform scale-x-[-1] filter brightness-0 opacity-60"
-                          />
-                        </button>
+                        {/* Top right icons - Heart and Share */}
+                        <div className="absolute top-2 right-2 flex gap-1 z-10">
+                          <button 
+                            onClick={(e) => handleShortlistClick(e, property.id)}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Heart 
+                              className={`w-4 h-4 transition-all duration-200 ${
+                                isShortlisted(property.id) 
+                                  ? 'text-red-500 fill-red-500' 
+                                  : 'text-gray-600 hover:text-red-500'
+                              }`} 
+                            />
+                          </button>
+                          
+                          <button 
+                            onClick={(e) => handleShareClick(e, property)}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Share 
+                              className="w-4 h-4 text-gray-600 hover:text-blue-500"
+                            />
+                          </button>
+                        </div>
 
                         {/* Top Section: Thumbnail + Details */}
                         <div className="flex h-20">
@@ -251,7 +296,7 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                           </div>
                           
                           {/* Property Details */}
-                          <div className="flex-1 p-3 flex flex-col justify-between">
+                          <div className="flex-1 p-3 pr-16 flex flex-col justify-between">
                             {/* Price */}
                             <div className="text-lg font-bold text-gray-900">
                               {property.price}

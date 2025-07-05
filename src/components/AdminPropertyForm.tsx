@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
 import ImageUploader from './ImageUploader';
+import VideoUploader from './VideoUploader';
+import AdminMediaPreview from './AdminMediaPreview';
 import { toast } from 'sonner';
 
 interface AdminPropertyFormProps {
@@ -40,6 +42,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
     amenities: [] as string[],
   });
   const [images, setImages] = useState<string[]>([]);
+  const [videos, setVideos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Predefined property types for consistency
@@ -131,6 +134,14 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
       );
       console.log('Setting existing images:', validImages.length, 'valid images');
       setImages(validImages);
+
+      // Set existing videos - ensure they are valid
+      const existingVideos = property.videos || [];
+      const validVideos = existingVideos.filter(video => 
+        video && typeof video === 'string' && !video.startsWith('blob:')
+      );
+      console.log('Setting existing videos:', validVideos.length, 'valid videos');
+      setVideos(validVideos);
     }
   }, [property]);
 
@@ -180,6 +191,23 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
     setImages(uploadedImages);
   };
 
+  const handleVideoUpload = (uploadedVideos: string[]) => {
+    console.log('Videos updated in form:', uploadedVideos.length, 'videos');
+    setVideos(uploadedVideos);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+    console.log('Image removed at index:', index, 'Remaining images:', updatedImages.length);
+  };
+
+  const handleRemoveVideo = (index: number) => {
+    const updatedVideos = videos.filter((_, i) => i !== index);
+    setVideos(updatedVideos);
+    console.log('Video removed at index:', index, 'Remaining videos:', updatedVideos.length);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -217,6 +245,10 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
         img && typeof img === 'string' && !img.startsWith('blob:')
       );
 
+      const validVideos = videos.filter(video => 
+        video && typeof video === 'string' && !video.startsWith('blob:')
+      );
+
       if (validImages.length === 0) {
         toast.error('No valid images to save. Please upload images again.');
         setLoading(false);
@@ -226,6 +258,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
       const propertyData = {
         ...formData,
         images: validImages,
+        videos: validVideos.length > 0 ? validVideos : undefined,
         bedrooms: (!isLandCategory && formData.bedrooms) ? parseInt(formData.bedrooms) : undefined,
         bathrooms: (!isLandCategory && formData.bathrooms) ? parseInt(formData.bathrooms) : undefined,
         featured: property?.featured || false,
@@ -630,6 +663,30 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({
                 maxImages={10}
               />
             </div>
+
+            {/* Video Upload - Optional */}
+            <div>
+              <Label>Property Videos (Optional)</Label>
+              <p className="text-sm text-gray-600 mb-3">
+                Add videos to showcase your property. You can upload video files or paste YouTube/Vimeo links.
+              </p>
+              <VideoUploader 
+                onVideosUpload={handleVideoUpload} 
+                initialVideos={videos}
+                maxVideos={5}
+              />
+            </div>
+
+            {/* Media Preview - Shows all uploaded media after saving */}
+            {(images.length > 0 || videos.length > 0) && (
+              <AdminMediaPreview
+                images={images}
+                videos={videos}
+                onRemoveImage={handleRemoveImage}
+                onRemoveVideo={handleRemoveVideo}
+                className="border-t pt-6"
+              />
+            )}
 
             {/* Submit Button */}
             <div className="flex gap-4 pt-4">

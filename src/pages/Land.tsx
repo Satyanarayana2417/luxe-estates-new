@@ -6,10 +6,12 @@ import Header from '@/components/Header';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, MapPin, Home, ChevronRight, Square } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Search, Filter, MapPin, Home, ChevronRight, Square, Heart, Share } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePropertyLocations } from '@/hooks/usePropertyLocations';
+import { useShortlist } from '@/hooks/useShortlist';
 import EnhancedShareMenu from '@/components/EnhancedShareMenu';
 
 interface Property {
@@ -32,11 +34,13 @@ const Land = () => {
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [manualSearchQuery, setManualSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [showAllOnMobile, setShowAllOnMobile] = useState(false);
   const [shareMenuState, setShareMenuState] = useState<{isOpen: boolean, propertyId: string | null}>({isOpen: false, propertyId: null});
   const navigate = useNavigate();
   const { locationData } = usePropertyLocations();
+  const { isShortlisted, toggleShortlist, isLoading: shortlistLoading } = useShortlist();
 
   useEffect(() => {
     fetchProperties();
@@ -44,7 +48,7 @@ const Land = () => {
 
   useEffect(() => {
     filterProperties();
-  }, [properties, searchQuery, selectedType]);
+  }, [properties, searchQuery, selectedType, manualSearchQuery]);
 
   const fetchProperties = async () => {
     try {
@@ -74,10 +78,21 @@ const Land = () => {
   const filterProperties = () => {
     let filtered = properties;
 
-    if (searchQuery) {
+    // Check both dropdown search query and manual search query
+    const effectiveSearchQuery = manualSearchQuery.trim() || searchQuery;
+    
+    if (effectiveSearchQuery) {
+      const searchTerm = effectiveSearchQuery.toLowerCase();
       filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.location.toLowerCase().includes(searchQuery.toLowerCase())
+        property.title.toLowerCase().includes(searchTerm) ||
+        property.location.toLowerCase().includes(searchTerm) ||
+        property.category.toLowerCase().includes(searchTerm) ||
+        property.type.toLowerCase().includes(searchTerm) ||
+        property.description?.toLowerCase().includes(searchTerm) ||
+        property.area?.toLowerCase().includes(searchTerm) ||
+        (property.bedrooms && property.bedrooms.toString().includes(searchTerm)) ||
+        (property.bathrooms && property.bathrooms.toString().includes(searchTerm)) ||
+        property.price.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -123,6 +138,11 @@ const Land = () => {
     setShareMenuState({isOpen: true, propertyId});
   };
 
+  const handleShortlistClick = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    await toggleShortlist(propertyId);
+  };
+
   const handleCloseShareMenu = () => {
     setShareMenuState({isOpen: false, propertyId: null});
   };
@@ -156,7 +176,7 @@ const Land = () => {
           {/* Search and Filters */}
           <div className="glass rounded-2xl p-6 max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-2">
+              <div>
                 <Select 
                   value={searchQuery || 'all-locations'} 
                   onValueChange={(value) => setSearchQuery(value === 'all-locations' ? '' : value)}
@@ -178,6 +198,20 @@ const Land = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              
+              <div>
+                <Input
+                  placeholder="Enter anything related to properties to search…"
+                  value={manualSearchQuery}
+                  onChange={(e) => setManualSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  className="w-full h-12 bg-white/90 border-white/30 rounded-lg text-gray-900 placeholder-gray-500"
+                />
               </div>
               
               <div>
@@ -264,17 +298,33 @@ const Land = () => {
                                 </div>
                               )}
                               
-                              {/* Share button for horizontal scroll cards */}
-                              <button
-                                onClick={(e) => handleShareClick(e, property.id)}
-                                className="absolute top-2 right-2 w-8 h-8 bg-white shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all duration-200 z-10 border border-gray-200"
-                              >
-                                <img 
-                                  src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                                  alt="Share" 
-                                  className="w-4 h-4 transform scale-x-[-1]"
-                                />
-                              </button>
+                              {/* Top right icons - Heart and Share */}
+                              <div className="absolute top-2 right-2 flex gap-1">
+                                {/* Heart Icon */}
+                                <button 
+                                  onClick={(e) => handleShortlistClick(e, property.id)}
+                                  disabled={shortlistLoading}
+                                  className="w-5 h-5 flex items-center justify-center z-10"
+                                  style={{ touchAction: 'manipulation' }}
+                                >
+                                  <Heart 
+                                    className={`w-4 h-4 ${
+                                      isShortlisted(property.id) 
+                                        ? 'text-red-500 fill-red-500' 
+                                        : 'text-white'
+                                    }`} 
+                                  />
+                                </button>
+                                
+                                {/* Share Icon */}
+                                <button
+                                  onClick={(e) => handleShareClick(e, property.id)}
+                                  className="w-5 h-5 flex items-center justify-center z-10"
+                                  style={{ touchAction: 'manipulation' }}
+                                >
+                                  <Share className="w-4 h-4 text-white" />
+                                </button>
+                              </div>
                             </div>
 
                             <div className="p-3">
@@ -319,16 +369,33 @@ const Land = () => {
                           className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards] relative" 
                           style={{animationDelay: `${index * 0.05}s`}}
                         >
-                          <button 
-                            onClick={(e) => handleShareClick(e, property.id)}
-                            className="absolute top-2 right-2 w-8 h-8 bg-white shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all duration-200 z-10 border border-gray-200"
-                          >
-                            <img 
-                              src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                              alt="Share" 
-                              className="w-4 h-4 transform scale-x-[-1]"
-                            />
-                          </button>
+                          {/* Top right icons - Heart and Share */}
+                          <div className="absolute top-2 right-2 flex gap-1 z-10">
+                            {/* Heart Icon */}
+                            <button 
+                              onClick={(e) => handleShortlistClick(e, property.id)}
+                              disabled={shortlistLoading}
+                              className="w-5 h-5 flex items-center justify-center"
+                              style={{ touchAction: 'manipulation' }}
+                            >
+                              <Heart 
+                                className={`w-4 h-4 ${
+                                  isShortlisted(property.id) 
+                                    ? 'text-red-500 fill-red-500' 
+                                    : 'text-gray-600'
+                                }`} 
+                              />
+                            </button>
+                            
+                            {/* Share Icon */}
+                            <button 
+                              onClick={(e) => handleShareClick(e, property.id)}
+                              className="w-5 h-5 flex items-center justify-center"
+                              style={{ touchAction: 'manipulation' }}
+                            >
+                              <Share className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
 
                           {/* Main Card Content - Horizontal Layout */}
                           <div className="flex">
@@ -424,7 +491,7 @@ const Land = () => {
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">No Land Properties Found</h3>
               <p className="text-gray-600 mb-6">Try adjusting your search criteria or browse all properties.</p>
-              <Button onClick={() => {setSearchQuery(''); setSelectedType('all');}}>
+              <Button onClick={() => {setSearchQuery(''); setManualSearchQuery(''); setSelectedType('all');}}>
                 Clear Filters
               </Button>
             </div>

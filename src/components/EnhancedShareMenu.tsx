@@ -4,6 +4,7 @@ import { X, Mail, Facebook, Twitter, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface EnhancedShareMenuProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   if (!isOpen) return null;
 
@@ -70,6 +72,10 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
     try {
       await navigator.clipboard.writeText(propertyUrl);
       setCopied(true);
+      toast({
+        title: "Link copied!",
+        description: "Property link copied to clipboard",
+      });
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Error copying URL:', error);
@@ -82,9 +88,18 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
       try {
         document.execCommand('copy');
         setCopied(true);
+        toast({
+          title: "Link copied!",
+          description: "Property link copied to clipboard",
+        });
         setTimeout(() => setCopied(false), 2000);
       } catch (fallbackError) {
         console.error('Fallback copy failed:', fallbackError);
+        toast({
+          title: "Error",
+          description: "Unable to copy link to clipboard",
+          variant: "destructive",
+        });
       }
       document.body.removeChild(textArea);
     }
@@ -123,7 +138,8 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
             {/* WhatsApp */}
             <button
               onClick={handleWhatsAppShare}
-              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-green-50 hover:scale-110 hover:shadow-lg flex-shrink-0"
+              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-green-50 hover:scale-110 hover:shadow-lg flex-shrink-0 active:scale-95 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors duration-200">
                 <svg
@@ -151,7 +167,8 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
             {/* Twitter/X */}
             <button
               onClick={handleTwitterShare}
-              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-gray-50 hover:scale-110 hover:shadow-lg flex-shrink-0"
+              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-gray-50 hover:scale-110 hover:shadow-lg flex-shrink-0 active:scale-95 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-full flex items-center justify-center group-hover:bg-gray-800 transition-colors duration-200">
                 <Twitter className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -162,7 +179,8 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
             {/* Facebook */}
             <button
               onClick={handleFacebookShare}
-              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-blue-50 hover:scale-110 hover:shadow-lg flex-shrink-0"
+              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-blue-50 hover:scale-110 hover:shadow-lg flex-shrink-0 active:scale-95 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-700 transition-colors duration-200">
                 <Facebook className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -173,16 +191,21 @@ const EnhancedShareMenu: React.FC<EnhancedShareMenuProps> = ({
             {/* Copy URL */}
             <button
               onClick={handleCopyUrl}
-              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-gray-50 hover:scale-110 hover:shadow-lg flex-shrink-0"
+              className="group flex flex-col items-center gap-2 p-2 md:p-3 rounded-2xl transition-all duration-200 hover:bg-gray-50 hover:scale-110 hover:shadow-lg flex-shrink-0 active:scale-95 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-600 rounded-full flex items-center justify-center group-hover:bg-gray-700 transition-colors duration-200">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+                copied ? 'bg-green-600 animate-pulse' : 'bg-gray-600 group-hover:bg-gray-700'
+              }`}>
                 {copied ? (
                   <Check className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 ) : (
                   <Copy className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 )}
               </div>
-              <span className="text-xs font-medium text-gray-600 group-hover:text-gray-700 transition-colors duration-200">
+              <span className={`text-xs font-medium transition-colors duration-200 ${
+                copied ? 'text-green-600' : 'text-gray-600 group-hover:text-gray-700'
+              }`}>
                 {copied ? 'Copied!' : 'Copy URL'}
               </span>
             </button>

@@ -61,16 +61,17 @@ const PropertyHighlights: React.FC<PropertyHighlightsProps> = ({ highlights }) =
           return (
             <div
               key={index}
-              className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300"
+              className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300 hover:scale-105 card-reveal"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-300">
                 <IconComponent className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1 capitalize">
+                <h3 className="font-semibold text-gray-900 mb-1 capitalize hover:text-purple-700 transition-colors duration-300">
                   {highlight.replace(/_/g, ' ')}
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed hover:text-gray-800 transition-colors duration-300">
                   {description}
                 </p>
               </div>
@@ -80,9 +81,9 @@ const PropertyHighlights: React.FC<PropertyHighlightsProps> = ({ highlights }) =
       </div>
       
       {/* Summary Badge */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 hover:shadow-md transition-all duration-300 hover:scale-105">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300">
             <CheckCircle className="w-5 h-5 text-white" />
           </div>
           <div>

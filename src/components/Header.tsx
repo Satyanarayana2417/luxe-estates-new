@@ -276,14 +276,8 @@ const Header = () => {
                 }}
               >
                 {/* Menu Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200/20">
+                <div className="flex items-center justify-center p-4 border-b border-gray-200/20">
                   <h2 className={`text-lg font-semibold ${textColorClass}`}>Menu</h2>
-                  <button 
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`p-2 rounded-lg ${menuButtonClass} transition-colors`}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
                 </div>
 
                 {/* Menu Items */}

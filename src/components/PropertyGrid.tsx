@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PropertyCard from './PropertyCard';
 import { SearchFilters } from './SearchBar';
-import { ChevronRight, MapPin, Square } from 'lucide-react';
+import { ChevronRight, MapPin, Square, Heart, Share } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRealtimeProperties } from '@/hooks/useRealtimeProperties';
 import EnhancedShareMenu from '@/components/EnhancedShareMenu';
+import { useShortlist } from '@/hooks/useShortlist';
 
 interface Property {
   id: string;
@@ -39,6 +40,9 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
   
   // Add new state for mobile view
   const [showAllOnMobile, setShowAllOnMobile] = useState(false);
+  
+  // Add shortlist functionality
+  const { isShortlisted, toggleShortlist, isLoading: shortlistLoading } = useShortlist();
 
   // Use the optimized real-time properties hook
   const { properties, loading, error, refetch } = useRealtimeProperties({
@@ -61,9 +65,21 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
       filtered = properties.filter(property => {
         let matches = true;
 
-        // Location filter
+        // Enhanced comprehensive search - search across multiple property fields
         if (searchFilters.location && searchFilters.location.trim() !== '') {
-          matches = matches && property.location.toLowerCase().includes(searchFilters.location.toLowerCase());
+          const searchTerm = searchFilters.location.toLowerCase();
+          const propertyMatches = 
+            property.title.toLowerCase().includes(searchTerm) ||
+            property.location.toLowerCase().includes(searchTerm) ||
+            property.category.toLowerCase().includes(searchTerm) ||
+            property.type.toLowerCase().includes(searchTerm) ||
+            property.description?.toLowerCase().includes(searchTerm) ||
+            property.area?.toLowerCase().includes(searchTerm) ||
+            (property.bedrooms && property.bedrooms.toString().includes(searchTerm)) ||
+            (property.bathrooms && property.bathrooms.toString().includes(searchTerm)) ||
+            property.price.toLowerCase().includes(searchTerm);
+          
+          matches = matches && propertyMatches;
         }
 
         // Property type filter
@@ -173,6 +189,12 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
 
   const handleCloseShareMenu = () => {
     setShareMenuState({isOpen: false, propertyId: null});
+  };
+
+  // Add shortlist handler
+  const handleShortlistClick = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+    await toggleShortlist(propertyId);
   };
 
   const getSelectedProperty = () => {
@@ -318,17 +340,34 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
                                 Featured
                               </div>
                             )}
-                            {/* Share Icon - Fixed Position Top Right */}
-                            <button 
-                              onClick={(e) => handleShareClick(e, property.id)}
-                              className="absolute top-2 right-2 w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/40"
-                            >
-                              <img 
-                                src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                                alt="Share" 
-                                className="w-4 h-4 transform scale-x-[-1] filter brightness-0 invert"
-                              />
-                            </button>
+                            
+                            {/* Top right icons - Heart and Share */}
+                            <div className="absolute top-2 right-2 flex gap-1">
+                              {/* Heart Icon */}
+                              <button 
+                                onClick={(e) => handleShortlistClick(e, property.id)}
+                                disabled={shortlistLoading}
+                                className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                              >
+                                <Heart 
+                                  className={`w-4 h-4 transition-all duration-200 ${
+                                    isShortlisted(property.id) 
+                                      ? 'text-red-500 fill-red-500' 
+                                      : 'text-white hover:text-red-400 drop-shadow-md'
+                                  }`} 
+                                />
+                              </button>
+                              
+                              {/* Share Icon */}
+                              <button 
+                                onClick={(e) => handleShareClick(e, property.id)}
+                                className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                              >
+                                <Share 
+                                  className="w-4 h-4 text-white hover:text-blue-400 drop-shadow-md"
+                                />
+                              </button>
+                            </div>
                           </div>
 
                           {/* Content */}
@@ -375,17 +414,33 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
                         className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards] relative" 
                         style={{animationDelay: `${index * 0.05}s`}}
                       >
-                        {/* Fixed Share Icon - Top Right Corner */}
-                        <button 
-                          onClick={(e) => handleShareClick(e, property.id)}
-                          className="absolute top-2 right-2 w-8 h-8 bg-white shadow-md hover:shadow-lg rounded-full flex items-center justify-center transition-all duration-200 z-10 border border-gray-200"
-                        >
-                          <img 
-                            src="/lovable-uploads/fb5708ad-6c98-42c8-beae-f03debf74773.png" 
-                            alt="Share" 
-                            className="w-4 h-4 transform scale-x-[-1]"
-                          />
-                        </button>
+                        {/* Top right icons - Heart and Share */}
+                        <div className="absolute top-2 right-2 flex gap-1 z-10">
+                          {/* Heart Icon */}
+                          <button 
+                            onClick={(e) => handleShortlistClick(e, property.id)}
+                            disabled={shortlistLoading}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Heart 
+                              className={`w-4 h-4 transition-all duration-200 ${
+                                isShortlisted(property.id) 
+                                  ? 'text-red-500 fill-red-500' 
+                                  : 'text-gray-600 hover:text-red-500'
+                              }`} 
+                            />
+                          </button>
+                          
+                          {/* Share Icon */}
+                          <button 
+                            onClick={(e) => handleShareClick(e, property.id)}
+                            className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Share 
+                              className="w-4 h-4 text-gray-600 hover:text-blue-500"
+                            />
+                          </button>
+                        </div>
 
                         {/* Main Card Content - Horizontal Layout */}
                         <div className="flex">

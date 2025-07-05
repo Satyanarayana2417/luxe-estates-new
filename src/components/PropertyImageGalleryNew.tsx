@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, X, Maximize2, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
