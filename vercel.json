@@ -4,5 +4,9 @@
   ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview"
+  }
 }
