@@ -113,41 +113,90 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
+  const handleSearchClick = () => {
+    if (location.pathname === '/') {
+      // Already on home page, scroll to hero section and focus search input
+      const heroSection = document.querySelector('#hero');
+      if (heroSection) {
+        heroSection.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          // Target the specific "Search Anything" input field using correct IDs
+          const searchInput = document.getElementById('search-anything-input') as HTMLInputElement ||
+                            document.getElementById('search-anything-input-mobile') as HTMLInputElement;
+          console.log('Search input found:', searchInput);
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.click();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            console.log('Successfully focused on search input');
+          } else {
+            console.log('Search input not found with IDs, trying placeholder selector');
+            // Try by placeholder as fallback
+            const fallbackInput = document.querySelector('input[placeholder*="Enter anything related to properties"]') as HTMLInputElement;
+            if (fallbackInput) {
+              fallbackInput.focus();
+              fallbackInput.click();
+            }
+          }
+        }, 500);
+      }
+    } else {
+      // Navigate to home page first, then focus search
+      navigate('/');
+      setTimeout(() => {
+        const heroSection = document.querySelector('#hero');
+        if (heroSection) {
+          heroSection.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => {
+            const searchInput = document.getElementById('search-anything-input') as HTMLInputElement ||
+                              document.getElementById('search-anything-input-mobile') as HTMLInputElement;
+            if (searchInput) {
+              searchInput.focus();
+              searchInput.click();
+              searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 500);
+        }
+      }, 100);
+    }
+    setIsMenuOpen(false);
+  };
+
   // Enhanced text visibility classes with better contrast and font weight
-  // For PropertyDetails page, use high contrast colors
+  // Dynamic colors: white on dark backgrounds, black on light backgrounds
   const getTextColorClass = () => {
     if (isPropertyDetailsPage) {
-      return 'text-gray-900 font-bold';
+      return 'text-gray-900 font-bold'; // Black text on light background
     }
-    return isOnHeroSection ? 'text-white font-semibold' : 'text-gray-700 font-medium';
+    return isOnHeroSection ? 'text-white font-semibold' : 'text-gray-900 font-medium'; // White on hero (dark), black elsewhere
   };
 
   const getHoverColorClass = () => {
     if (isPropertyDetailsPage) {
-      return 'hover:text-purple-600';
+      return 'hover:text-purple-600'; // Purple hover on light background
     }
-    return isOnHeroSection ? 'hover:text-gray-200' : 'hover:text-purple-600';
+    return isOnHeroSection ? 'hover:text-gray-200' : 'hover:text-purple-600'; // Light gray on dark, purple on light
   };
 
   const getLogoTextClass = () => {
     if (isPropertyDetailsPage) {
-      return 'text-gray-900 font-bold';
+      return 'text-gray-900 font-bold'; // Black logo on light background
     }
-    return isOnHeroSection ? 'text-white font-bold' : 'text-gray-900 font-bold';
+    return isOnHeroSection ? 'text-white font-bold' : 'text-gray-900 font-bold'; // White on hero, black elsewhere
   };
 
   const getSubtitleTextClass = () => {
     if (isPropertyDetailsPage) {
-      return 'text-gray-700 font-medium';
+      return 'text-gray-700 font-medium'; // Dark gray on light background
     }
-    return isOnHeroSection ? 'text-gray-100 font-medium' : 'text-gray-600';
+    return isOnHeroSection ? 'text-gray-100 font-medium' : 'text-gray-600'; // Light gray on dark, dark gray on light
   };
 
   const getMenuButtonClass = () => {
     if (isPropertyDetailsPage) {
-      return 'text-gray-900 hover:bg-gray-100/40 font-bold';
+      return 'text-gray-900 hover:bg-gray-100/40 font-bold'; // Black text with light hover on light background
     }
-    return isOnHeroSection ? 'text-white hover:bg-white/20 font-medium' : 'text-gray-700 hover:bg-gray-100/20';
+    return isOnHeroSection ? 'text-white hover:bg-white/20 font-medium' : 'text-gray-900 hover:bg-gray-100/20'; // White on dark, black on light
   };
 
   const getHeaderBgClass = () => {
@@ -220,6 +269,17 @@ const Header = () => {
 
             {/* Right Side - Mobile Menu */}
             <div className="flex items-center space-x-2">
+              {/* Search Button - Desktop */}
+              {!isMobile && (
+                <button
+                  onClick={handleSearchClick}
+                  className={`hidden lg:flex items-center space-x-2 px-3 py-2 rounded-lg ${textColorClass} ${hoverColorClass} transition-all duration-200 hover:bg-white/10`}
+                >
+                  <Search className="w-5 h-5" />
+                  <span className="text-sm font-medium">Search</span>
+                </button>
+              )}
+              
               {/* Profile Button - Desktop */}
               {!isMobile && (
                 <button
@@ -401,6 +461,21 @@ const Header = () => {
                     <Phone className="w-5 h-5" />
                     Contact
                   </a>
+                  
+                  {/* Search Button in Mobile Menu */}
+                  <button
+                    onClick={handleSearchClick}
+                    className={`${textColorClass} ${hoverColorClass} ${
+                      isPropertyDetailsPage 
+                        ? 'hover:bg-gray-50' 
+                        : isOnHeroSection 
+                          ? 'hover:bg-white/10' 
+                          : 'hover:bg-purple-50'
+                    } transition-colors px-6 py-4 flex items-center gap-3 font-medium w-full text-left`}
+                  >
+                    <Search className="w-5 h-5" />
+                    Search Properties
+                  </button>
                   
                   {/* Profile/Login Section in Mobile Menu */}
                   <div className="border-t border-gray-200/20 mt-4 pt-4">

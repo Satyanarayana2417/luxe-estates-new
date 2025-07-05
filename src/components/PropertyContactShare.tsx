@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Phone, Share2 } from 'lucide-react';
+import { Phone, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PropertyContactShareProps {
@@ -79,7 +79,7 @@ const PropertyContactShare: React.FC<PropertyContactShareProps> = ({ property })
         variant="outline"
         className="flex-1 h-8 text-xs border-gray-300"
       >
-        <Share2 className="w-3 h-3 mr-1" />
+        <Send className="w-3 h-3 mr-1" />
         Share
       </Button>
     </div>

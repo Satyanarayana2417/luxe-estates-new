@@ -1,22 +1,14 @@
 
 import React from 'react';
 import { Home, Phone, Mail, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Footer = () => {
-  // Scroll animations
-  const { ref: footerRef, isVisible: footerVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { ref: bottomRef, isVisible: bottomVisible } = useScrollAnimation({ threshold: 0.1, delay: 400 });
-
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div 
-        ref={footerRef}
-        className={`container mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-fade-in ${footerVisible ? 'animate' : ''}`}
-      >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
-          <div className={`lg:col-span-1 scroll-fade-in-left ${footerVisible ? 'animate' : ''} scroll-stagger-1`}>
+          <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-6">
               <div className="w-10 h-10 bg-premium-gradient rounded-xl flex items-center justify-center">
                 <Home className="w-6 h-6 text-white" />
@@ -31,20 +23,20 @@ const Footer = () => {
               with a commitment to excellence and personalized service.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300 hover:scale-110">
+              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300 hover:scale-110">
+              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300 hover:scale-110">
+              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
                 <Twitter className="w-5 h-5" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className={`scroll-fade-in ${footerVisible ? 'animate' : ''} scroll-stagger-2`}>
+          <div>
             <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">Buy Property</a></li>
@@ -57,7 +49,7 @@ const Footer = () => {
           </div>
 
           {/* Property Types */}
-          <div className={`scroll-fade-in ${footerVisible ? 'animate' : ''} scroll-stagger-3`}>
+          <div>
             <h4 className="text-lg font-semibold mb-6">Property Types</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">Houses for Sale</a></li>
@@ -70,7 +62,7 @@ const Footer = () => {
           </div>
 
           {/* Contact Info */}
-          <div className={`scroll-fade-in-right ${footerVisible ? 'animate' : ''} scroll-stagger-4`}>
+          <div>
             <h4 className="text-lg font-semibold mb-6">Contact Info</h4>
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
@@ -110,10 +102,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-700">
-        <div 
-          ref={bottomRef}
-          className={`container mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-fade-in ${bottomVisible ? 'animate' : ''}`}
-        >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
               © 2024 LuxeEstates. All rights reserved.

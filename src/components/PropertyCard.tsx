@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MapPin, Bed, Bath, Square, Phone, ChevronLeft, ChevronRight, Share, Play } from 'lucide-react';
+import { Heart, MapPin, Bed, Bath, Square, Phone, ChevronLeft, ChevronRight, Send, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -102,14 +102,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   const handleShortlistClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    // Add heart bounce animation
-    const heartIcon = e.currentTarget.querySelector('.heart-icon');
-    if (heartIcon) {
-      heartIcon.classList.add('heart-bounce');
-      setTimeout(() => heartIcon.classList.remove('heart-bounce'), 600);
-    }
-    
     await toggleShortlist(property.id);
   };
 
@@ -120,7 +112,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   return (
     <>
       <div 
-        className="property-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-purple-200 active:scale-100 active:shadow-xl"
+        className="property-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] transform cursor-pointer"
         onClick={handleCardClick}
       >
         {/* Image Carousel - Reduced height for mobile */}
@@ -198,25 +190,23 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <button 
               onClick={handleShortlistClick}
               disabled={shortlistLoading}
-              className="w-8 h-8 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white/40 hover:scale-110 active:scale-95 active:bg-white/60 transform touch-manipulation"
-              style={{ touchAction: 'manipulation' }}
+              className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
             >
               <Heart 
-                className={`heart-icon w-4 h-4 transition-all duration-300 ${
+                className={`w-4 h-4 transition-all duration-200 ${
                   isPropertyShortlisted 
-                    ? 'text-red-500 fill-red-500 animate-pulse' 
-                    : 'text-white hover:text-red-400 active:text-red-500'
+                    ? 'text-red-500 fill-red-500' 
+                    : 'text-white hover:text-red-400 drop-shadow-md'
                 }`} 
               />
             </button>
             
             <button 
               onClick={handleShareClick}
-              className="w-8 h-8 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white/40 hover:scale-110 active:scale-95 active:bg-white/60 transform touch-manipulation"
-              style={{ touchAction: 'manipulation' }}
+              className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
             >
-              <Share 
-                className="w-4 h-4 text-white hover:text-blue-400 active:text-blue-500 transition-colors duration-300"
+              <Send 
+                className="w-4 h-4 text-white hover:text-blue-400 drop-shadow-md"
               />
             </button>
           </div>
@@ -225,15 +215,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <>
               <button 
                 onClick={prevImage}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:-translate-x-1 active:scale-110 active:bg-white/80 touch-manipulation"
-                style={{ touchAction: 'manipulation' }}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:-translate-x-1"
               >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
               <button 
                 onClick={nextImage}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:translate-x-1 active:scale-110 active:bg-white/80 touch-manipulation"
-                style={{ touchAction: 'manipulation' }}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:bg-white/60 hover:scale-125 hover:translate-x-1"
               >
                 <ChevronRight className="w-5 h-5 text-white" />
               </button>
@@ -246,12 +234,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                 <button
                   key={index}
                   onClick={(e) => goToImage(index, e)}
-                  className={`transition-all duration-300 ease-in-out rounded-full hover:scale-125 active:scale-110 transform touch-manipulation ${
+                  className={`transition-all duration-300 ease-in-out rounded-full hover:scale-125 transform ${
                     index === currentMediaIndex 
                       ? 'bg-white w-6 h-2' 
                       : 'bg-white/50 hover:bg-white/90 w-2 h-2'
                   } ${media.type === 'video' ? 'ring-2 ring-blue-400' : ''}`}
-                  style={{ touchAction: 'manipulation' }}
                 />
               ))}
             </div>
@@ -329,13 +316,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <div className="flex space-x-3">
             <Button 
               onClick={handleViewDetails}
-              className="flex-1 btn-interactive bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg active:scale-95"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
             >
               View Details
             </Button>
             <Button 
               variant="outline" 
-              className="p-3 border-gray-300 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 btn-interactive transition-all duration-300 hover:shadow-md active:scale-95"
+              className="p-3 border-gray-300 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md"
               onClick={(e) => e.stopPropagation()}
             >
               <Phone className="w-4 h-4" />

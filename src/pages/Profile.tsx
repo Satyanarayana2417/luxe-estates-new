@@ -6,7 +6,7 @@ import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Heart, MapPin, Calendar, Mail, LogOut, Home, Search, FileText, Shield, Phone, Share2 } from 'lucide-react';
+import { User, Heart, MapPin, Calendar, Mail, LogOut, Home, Search, FileText, Shield, Phone, Send } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyContactShare from '@/components/PropertyContactShare';
 import Header from '@/components/Header';
@@ -136,26 +136,38 @@ const Profile = () => {
       if (heroSection) {
         heroSection.scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => {
-          // Target the mobile search input first (since this is mobile navigation)
-          const mobileSearchInput = document.getElementById('search-anything-input-mobile') as HTMLInputElement;
-          const desktopSearchInput = document.getElementById('search-anything-input') as HTMLInputElement;
-          
-          // Use mobile input if available, otherwise fallback to desktop
-          const searchInput = mobileSearchInput || desktopSearchInput;
-          
-          if (searchInput) {
-            searchInput.focus();
-            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Trigger a click event to ensure any click handlers are fired
-            searchInput.click();
-          } else {
-            // Fallback using placeholder text
-            const fallbackInput = document.querySelector('input[placeholder*="Enter anything related to properties"]') as HTMLInputElement;
-            if (fallbackInput) {
-              fallbackInput.focus();
-              fallbackInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              fallbackInput.click();
+          // Try to find the search input with improved logic
+          const findAndFocusSearchInput = () => {
+            // First try mobile input (more likely on mobile devices)
+            let searchInput = document.getElementById('search-anything-input-mobile') as HTMLInputElement;
+            
+            // If mobile not found, try desktop
+            if (!searchInput) {
+              searchInput = document.getElementById('search-anything-input') as HTMLInputElement;
             }
+            
+            // If still not found, try by placeholder
+            if (!searchInput) {
+              searchInput = document.querySelector('input[placeholder*="Enter anything related to properties"]') as HTMLInputElement;
+            }
+            
+            if (searchInput) {
+              searchInput.focus();
+              searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Trigger a click to ensure mobile keyboards appear
+              searchInput.click();
+              console.log('Successfully focused on search input from Profile page');
+              return true;
+            }
+            
+            console.log('Search input not found from Profile page');
+            return false;
+          };
+
+          // Try immediately
+          if (!findAndFocusSearchInput()) {
+            // If not found, wait a bit more and try again
+            setTimeout(findAndFocusSearchInput, 500);
           }
         }, 800);
       }
@@ -402,7 +414,7 @@ const Profile = () => {
                       onClick={() => handleShare(property)}
                       className="absolute top-2 right-2 z-10 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all duration-200 hover:scale-110"
                     >
-                      <Share2 className="w-3.5 h-3.5 text-gray-600" />
+                      <Send className="w-3.5 h-3.5 text-gray-600" />
                     </button>
 
                     <div className="flex">

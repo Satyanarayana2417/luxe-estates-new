@@ -129,7 +129,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, categoryFilter }) => {
               placeholder="Enter anything related to properties to search…"
               value={filters.manualLocation || ''}
               onChange={(e) => handleInputChange('manualLocation', e.target.value)}
-              className="input-enhanced w-full h-12 bg-gray-50/80 border border-gray-300 rounded-xl hover:bg-gray-100/80 backdrop-blur-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className="w-full h-12 bg-gray-50/80 border border-gray-300 rounded-xl hover:bg-gray-100/80 backdrop-blur-sm"
             />
           </div>
           
@@ -178,7 +178,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, categoryFilter }) => {
             <Button 
               onClick={handleSearch}
               disabled={loading}
-              className="btn-interactive btn-ripple w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg disabled:opacity-50 transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95"
+              className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 hover:scale-105 transform"
             >
               <Search className="w-5 h-5 mr-2" />
               Search Properties
@@ -289,7 +289,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, categoryFilter }) => {
           <Button 
             onClick={handleSearch}
             disabled={loading}
-            className="btn-interactive btn-ripple w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 hover:scale-105 transform active:scale-95"
+            className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 hover:scale-105 transform"
           >
             <Search className="w-5 h-5 mr-2" />
             Search Properties

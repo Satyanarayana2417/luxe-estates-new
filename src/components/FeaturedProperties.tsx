@@ -4,10 +4,9 @@ import { collection, getDocs, query, where, orderBy, limit, onSnapshot } from 'f
 import { db } from '@/lib/firebase';
 import PropertyCard from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
-import { Heart, Share } from 'lucide-react';
+import { Heart, Send } from 'lucide-react';
 import { useShortlist } from '@/hooks/useShortlist';
 import { useNavigate } from 'react-router-dom';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface Property {
   id: string;
@@ -33,11 +32,6 @@ const FeaturedProperties = () => {
   // Add shortlist functionality
   const { isShortlisted, toggleShortlist, isLoading: shortlistLoading } = useShortlist();
   const navigate = useNavigate();
-
-  // Scroll animations
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation({ threshold: 0.2 });
-  const { ref: filtersRef, isVisible: filtersVisible } = useScrollAnimation({ threshold: 0.2, delay: 200 });
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation({ threshold: 0.1, delay: 300 });
 
   const categories = ['All', 'For Sale', 'For Rent', 'Commercial', 'PG/Hostels', 'Land'];
 
@@ -220,10 +214,7 @@ const FeaturedProperties = () => {
     <section className="py-8 sm:py-12 lg:py-16 xl:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div 
-          ref={titleRef}
-          className={`text-center mb-6 sm:mb-8 lg:mb-12 scroll-fade-in ${titleVisible ? 'animate' : ''}`}
-        >
+        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6">
             Featured Properties
           </h2>
@@ -232,10 +223,7 @@ const FeaturedProperties = () => {
           </p>
           
           {/* Category Filter Buttons - Mobile Responsive */}
-          <div 
-            ref={filtersRef}
-            className={`mb-6 sm:mb-8 scroll-fade-in-right ${filtersVisible ? 'animate' : ''}`}
-          >
+          <div className="mb-6 sm:mb-8">
             {/* Mobile: Horizontal Scroll */}
             <div className="flex sm:hidden overflow-x-auto pb-2 px-2 -mx-2 space-x-2 snap-x snap-mandatory">
               {categories.map((category) => (
@@ -301,16 +289,14 @@ const FeaturedProperties = () => {
             </div>
           </div>
         ) : filteredProperties.length > 0 ? (
-          <div 
-            ref={gridRef}
-            className={`scroll-fade-in ${gridVisible ? 'animate' : ''}`}
-          >
+          <div>
             {/* Mobile: 2-Column Grid */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
               {filteredProperties.map((property, index) => (
                 <div 
                   key={property.id} 
-                  className={`property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${Math.min(index + 1, 6)}`}
+                  className="fade-in-up" 
+                  style={{animationDelay: `${index * 0.1}s`}}
                 >
                   <div 
                     className="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 transform hover:scale-105 cursor-pointer"
@@ -393,7 +379,8 @@ const FeaturedProperties = () => {
               {filteredProperties.map((property, index) => (
                 <div 
                   key={property.id} 
-                  className={`property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${Math.min(index + 1, 6)}`}
+                  className="fade-in-up" 
+                  style={{animationDelay: `${index * 0.1}s`}}
                 >
                   <PropertyCard property={property} />
                 </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import PropertyCard from './PropertyCard';
-import { Heart, ChevronRight, MapPin, Square, Phone, Share } from 'lucide-react';
+import { Heart, ChevronRight, MapPin, Square, Phone, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useShortlist } from '@/hooks/useShortlist';
@@ -199,7 +199,7 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                             onClick={(e) => handleShareClick(e, property)}
                             className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
                           >
-                            <Share 
+                            <Send 
                               className="w-4 h-4 text-white hover:text-blue-400 drop-shadow-md"
                             />
                           </button>
@@ -275,7 +275,7 @@ const SuggestedProperties: React.FC<SuggestedPropertiesProps> = ({
                             onClick={(e) => handleShareClick(e, property)}
                             className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
                           >
-                            <Share 
+                            <Send 
                               className="w-4 h-4 text-gray-600 hover:text-blue-500"
                             />
                           </button>

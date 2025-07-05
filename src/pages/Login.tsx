@@ -14,61 +14,17 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      setEmailError('Email is required');
-      return false;
-    }
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
-      return false;
-    }
-    setEmailError('');
-    return true;
-  };
-
-  const validatePassword = (password: string) => {
-    if (!password) {
-      setPasswordError('Password is required');
-      return false;
-    }
-    if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      return false;
-    }
-    setPasswordError('');
-    return true;
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    if (value) validateEmail(value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-    if (value) validatePassword(value);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    
-    if (!isEmailValid || !isPasswordValid) {
+    if (!email || !password) {
       toast({
-        title: "Validation Error",
-        description: "Please fix the errors below",
+        title: "Error",
+        description: "Please fill in all fields",
         variant: "destructive",
       });
       return;
@@ -122,25 +78,12 @@ const Login = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={handleEmailChange}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className={`pl-10 h-12 bg-white/50 border-white/30 focus:border-purple-500 transition-all duration-200 ${
-                    emailError ? 'border-red-500 focus:border-red-500 shake' : 
-                    email && !emailError ? 'border-green-500 focus:border-green-500' : ''
-                  }`}
+                  className="pl-10 h-12 bg-white/50 border-white/30 focus:border-purple-500 transition-all duration-200"
                   required
                 />
-                {email && !emailError && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
-                )}
               </div>
-              {emailError && (
-                <p className="text-red-500 text-sm mt-1 animate-slide-in">{emailError}</p>
-              )}
             </div>
             
             <div className="space-y-2">
@@ -151,12 +94,9 @@ const Login = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={handlePasswordChange}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className={`pl-10 pr-10 h-12 bg-white/50 border-white/30 focus:border-purple-500 transition-all duration-200 ${
-                    passwordError ? 'border-red-500 focus:border-red-500 shake' : 
-                    password && !passwordError ? 'border-green-500 focus:border-green-500' : ''
-                  }`}
+                  className="pl-10 pr-10 h-12 bg-white/50 border-white/30 focus:border-purple-500 transition-all duration-200"
                   required
                 />
                 <button
@@ -166,17 +106,7 @@ const Login = () => {
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
-                {password && !passwordError && (
-                  <div className="absolute right-10 top-1/2 transform -translate-y-1/2 text-green-500">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
-                )}
               </div>
-              {passwordError && (
-                <p className="text-red-500 text-sm mt-1 animate-slide-in">{passwordError}</p>
-              )}
             </div>
             
             <Button

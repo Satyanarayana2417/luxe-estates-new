@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PropertyCard from './PropertyCard';
 import { SearchFilters } from './SearchBar';
-import { ChevronRight, MapPin, Square, Heart, Share } from 'lucide-react';
+import { ChevronRight, MapPin, Square, Heart, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRealtimeProperties } from '@/hooks/useRealtimeProperties';
@@ -363,7 +363,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
                                 onClick={(e) => handleShareClick(e, property.id)}
                                 className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
                               >
-                                <Share 
+                                <Send 
                                   className="w-4 h-4 text-white hover:text-blue-400 drop-shadow-md"
                                 />
                               </button>
@@ -436,7 +436,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({ searchFilters }) => {
                             onClick={(e) => handleShareClick(e, property.id)}
                             className="w-5 h-5 flex items-center justify-center transition-all duration-200 hover:scale-110"
                           >
-                            <Share 
+                            <Send 
                               className="w-4 h-4 text-gray-600 hover:text-blue-500"
                             />
                           </button>

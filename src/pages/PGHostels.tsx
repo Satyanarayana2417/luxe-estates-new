@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import EnhancedShareMenu from '@/components/EnhancedShareMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, MapPin, Users, ChevronRight, Square, Share, Heart } from 'lucide-react';
+import { Search, Filter, MapPin, Users, ChevronRight, Square, Send, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePropertyLocations } from '@/hooks/usePropertyLocations';
@@ -378,7 +378,7 @@ const PGHostels = () => {
                                   className="w-5 h-5 flex items-center justify-center z-10"
                                   style={{ touchAction: 'manipulation' }}
                                 >
-                                  <Share className="w-4 h-4 text-white" />
+                                  <Send className="w-4 h-4 text-white" />
                                 </button>
                               </div>
                             </div>
@@ -451,7 +451,7 @@ const PGHostels = () => {
                               className="w-5 h-5 flex items-center justify-center"
                               style={{ touchAction: 'manipulation' }}
                             >
-                              <Share className="w-4 h-4 text-gray-600" />
+                              <Send className="w-4 h-4 text-gray-600" />
                             </button>
                           </div>
 

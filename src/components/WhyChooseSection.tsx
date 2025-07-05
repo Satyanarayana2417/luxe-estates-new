@@ -77,21 +77,21 @@ const WhyChooseSection: React.FC<WhyChooseSectionProps> = ({
   if (whyChoosePoints.length === 0) return null;
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8 hover:shadow-lg transition-all duration-300 hover:scale-105">
+    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300">
+        <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
           <Star className="w-5 h-5 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 hover:text-purple-700 transition-colors duration-300">Why Choose This Property?</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Why Choose This Property?</h2>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {whyChoosePoints.map((point, index) => (
-          <div key={index} className="flex items-start gap-3 hover:bg-white/50 rounded-lg p-2 transition-all duration-300 hover:shadow-md card-reveal" style={{ animationDelay: `${index * 0.1}s` }}>
-            <div className="flex-shrink-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 hover:scale-110 transition-transform duration-300">
+          <div key={index} className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1">
               <CheckCircle className="w-4 h-4 text-white" />
             </div>
-            <span className="text-gray-700 font-medium hover:text-gray-900 transition-colors duration-300">{point}</span>
+            <span className="text-gray-700 font-medium">{point}</span>
           </div>
         ))}
       </div>

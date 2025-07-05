@@ -7,7 +7,7 @@ import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, MapPin, Home, ChevronRight, Square, Heart, Share } from 'lucide-react';
+import { Search, Filter, MapPin, Home, ChevronRight, Square, Heart, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePropertyLocations } from '@/hooks/usePropertyLocations';
@@ -322,7 +322,7 @@ const Land = () => {
                                   className="w-5 h-5 flex items-center justify-center z-10"
                                   style={{ touchAction: 'manipulation' }}
                                 >
-                                  <Share className="w-4 h-4 text-white" />
+                                  <Send className="w-4 h-4 text-white" />
                                 </button>
                               </div>
                             </div>
@@ -393,7 +393,7 @@ const Land = () => {
                               className="w-5 h-5 flex items-center justify-center"
                               style={{ touchAction: 'manipulation' }}
                             >
-                              <Share className="w-4 h-4 text-gray-600" />
+                              <Send className="w-4 h-4 text-gray-600" />
                             </button>
                           </div>
 

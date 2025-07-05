@@ -5,7 +5,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, ArrowLeft, Phone, Share2 } from 'lucide-react';
+import { Heart, ArrowLeft, Phone, Send } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyContactShare from '@/components/PropertyContactShare';
 import Header from '@/components/Header';
@@ -206,7 +206,7 @@ const Shortlist = () => {
                       onClick={(e) => handleShare(property, e)}
                       className="absolute top-2 right-2 z-10 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all duration-200 hover:scale-110"
                     >
-                      <Share2 className="w-3.5 h-3.5 text-gray-600" />
+                      <Send className="w-3.5 h-3.5 text-gray-600" />
                     </button>
 
                     <div className="flex">

@@ -2,15 +2,10 @@
 import React, { useEffect } from 'react';
 import { Home, Building, MapPin, Users } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Categories = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Scroll animations
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation({ threshold: 0.2 });
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation({ threshold: 0.1, delay: 300 });
 
   // Scroll to top when component mounts (for navigation from category cards)
   useEffect(() => {
@@ -66,10 +61,7 @@ const Categories = () => {
     <section className="py-8 sm:py-12 lg:py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div 
-          ref={titleRef}
-          className={`text-center mb-6 sm:mb-8 lg:mb-12 scroll-fade-in ${titleVisible ? 'animate' : ''}`}
-        >
+        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             Browse by Category
           </h2>
@@ -79,10 +71,7 @@ const Categories = () => {
         </div>
 
         {/* Categories Grid - Mobile Gallery Style */}
-        <div 
-          ref={gridRef}
-          className={`mb-8 sm:mb-12 lg:mb-16 scroll-scale-in ${gridVisible ? 'animate' : ''}`}
-        >
+        <div className="mb-8 sm:mb-12 lg:mb-16">
           {/* Mobile: 2-Column Grid */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
             {categories.map((category, index) => {
@@ -91,7 +80,7 @@ const Categories = () => {
                 <div 
                   key={index}
                   onClick={() => handleCategoryClick(category.route)}
-                  className={`group relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-transparent hover:shadow-lg transition-all duration-300 cursor-pointer aspect-square property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${index + 1}`}
+                  className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-transparent hover:shadow-lg transition-all duration-300 cursor-pointer aspect-square"
                 >
                   {/* Gradient Background */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
@@ -131,7 +120,7 @@ const Categories = () => {
                 <div 
                   key={index}
                   onClick={() => handleCategoryClick(category.route)}
-                  className={`group relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-transparent hover:shadow-2xl transition-all duration-500 hover-lift cursor-pointer property-card-enter ${gridVisible ? 'animate' : ''} scroll-stagger-${index + 1}`}
+                  className="group relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-transparent hover:shadow-2xl transition-all duration-500 hover-lift cursor-pointer"
                 >
                   {/* Gradient Background */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
